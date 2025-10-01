@@ -23,7 +23,7 @@ export default function BookingConfirmationPage() {
   const fetchBooking = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/bookings/${reference}`);
+      const response = await fetch(`/api/bookings/by-reference/${reference}`);
       const data = await response.json();
 
       if (data.error) {
