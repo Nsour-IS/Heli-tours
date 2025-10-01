@@ -5,19 +5,29 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
       {/* Hero Section */}
       <div className="bg-primary-600 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">
-            Helicopter Tours Amman
-          </h1>
-          <p className="text-xl md:text-2xl text-primary-100 mb-8">
-            Experience breathtaking aerial views of Jordan's capital
-          </p>
-          <Link
-            href="/book"
-            className="inline-block px-8 py-4 bg-gold-500 text-white rounded-lg font-bold text-lg hover:bg-gold-600 transition-colors shadow-lg"
-          >
-            Book Your Flight
-          </Link>
+        <div className="container mx-auto px-4">
+          <div className="flex justify-end mb-4">
+            <Link
+              href="/coordinator"
+              className="px-4 py-2 bg-primary-700 text-white rounded-lg text-sm hover:bg-primary-800 transition-colors"
+            >
+              📊 Coordinator Dashboard
+            </Link>
+          </div>
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-4">
+              Helicopter Tours Amman
+            </h1>
+            <p className="text-xl md:text-2xl text-primary-100 mb-8">
+              Experience breathtaking aerial views of Jordan's capital
+            </p>
+            <Link
+              href="/book"
+              className="inline-block px-8 py-4 bg-gold-500 text-white rounded-lg font-bold text-lg hover:bg-gold-600 transition-colors shadow-lg"
+            >
+              Book Your Flight
+            </Link>
+          </div>
         </div>
       </div>
 
