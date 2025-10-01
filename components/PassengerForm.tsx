@@ -5,19 +5,21 @@ import type { AvailableFlight, PassengerInput } from '@/lib/types';
 
 interface PassengerFormProps {
   flight: AvailableFlight;
+  initialPassengerCount?: number;
   onBack: () => void;
   onSubmit: (data: any) => void;
 }
 
 export default function PassengerForm({
   flight,
+  initialPassengerCount = 1,
   onBack,
   onSubmit,
 }: PassengerFormProps) {
-  const [passengerCount, setPassengerCount] = useState(1);
-  const [passengers, setPassengers] = useState<PassengerInput[]>([
-    { name: '', weight_kg: 0 },
-  ]);
+  const [passengerCount, setPassengerCount] = useState(initialPassengerCount);
+  const [passengers, setPassengers] = useState<PassengerInput[]>(
+    Array.from({ length: initialPassengerCount }, () => ({ name: '', weight_kg: 0 }))
+  );
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');

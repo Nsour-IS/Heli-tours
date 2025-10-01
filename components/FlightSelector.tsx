@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import type { AvailableFlight } from '@/lib/types';
 
 interface FlightSelectorProps {
-  onSelect: (flight: AvailableFlight) => void;
+  onSelect: (flight: AvailableFlight, passengerCount: number) => void;
 }
 
 export default function FlightSelector({ onSelect }: FlightSelectorProps) {
@@ -12,6 +12,7 @@ export default function FlightSelector({ onSelect }: FlightSelectorProps) {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [showPassengerSelect, setShowPassengerSelect] = useState<string | null>(null);
 
   useEffect(() => {
     fetchFlights();
@@ -179,8 +180,13 @@ export default function FlightSelector({ onSelect }: FlightSelectorProps) {
                     <div className="border-l border-gray-300 pl-6">
                       <p className="text-sm text-gray-500">Seats Available</p>
                       <p className="text-lg font-semibold text-gray-800">
-                        {flight.remaining_seats} / {flight.max_passengers}
+                        {flight.actual_available_seats} / {flight.max_passengers}
                       </p>
+                      {flight.held_seats > 0 && (
+                        <p className="text-xs text-orange-600 mt-1">
+                          ⏳ {flight.held_seats} being reserved
+                        </p>
+                      )}
                     </div>
 
                     <div className="border-l border-gray-300 pl-6">
@@ -207,21 +213,56 @@ export default function FlightSelector({ onSelect }: FlightSelectorProps) {
                 {/* Status and Action */}
                 <div className="ml-6 flex flex-col items-end gap-3">
                   {getAvailabilityBadge(flight)}
-                  <button
-                    onClick={() => onSelect(flight)}
-                    disabled={
-                      flight.availability_level === 'full' ||
-                      flight.remaining_seats === 0
-                    }
-                    className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                      flight.availability_level === 'full' ||
-                      flight.remaining_seats === 0
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-primary-600 text-white hover:bg-primary-700'
-                    }`}
-                  >
-                    {flight.remaining_seats === 0 ? 'Fully Booked' : 'Select'}
-                  </button>
+
+                  {/* Passenger Count Selection */}
+                  {showPassengerSelect === flight.id ? (
+                    <div className="bg-white border border-gray-300 rounded-lg p-3 shadow-lg">
+                      <p className="text-xs text-gray-600 mb-2 font-medium">
+                        How many passengers?
+                      </p>
+                      <div className="flex gap-2">
+                        {[1, 2, 3].map((count) => (
+                          <button
+                            key={count}
+                            onClick={() => {
+                              onSelect(flight, count);
+                              setShowPassengerSelect(null);
+                            }}
+                            disabled={count > flight.actual_available_seats}
+                            className={`px-4 py-2 rounded-lg border font-medium text-sm transition-colors ${
+                              count > flight.actual_available_seats
+                                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                : 'bg-primary-600 text-white border-primary-600 hover:bg-primary-700'
+                            }`}
+                          >
+                            {count}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setShowPassengerSelect(null)}
+                        className="text-xs text-gray-500 mt-2 hover:text-gray-700"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowPassengerSelect(flight.id)}
+                      disabled={
+                        flight.availability_level === 'full' ||
+                        flight.actual_available_seats === 0
+                      }
+                      className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                        flight.availability_level === 'full' ||
+                        flight.actual_available_seats === 0
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-primary-600 text-white hover:bg-primary-700'
+                      }`}
+                    >
+                      {flight.actual_available_seats === 0 ? 'Fully Booked' : 'Select'}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

@@ -6,10 +6,68 @@ import FlightSelector from '@/components/FlightSelector';
 import PassengerForm from '@/components/PassengerForm';
 import BookingSummary from '@/components/BookingSummary';
 
+// Generate session ID for holds
+const getSessionId = () => {
+  if (typeof window === 'undefined') return '';
+  let sessionId = sessionStorage.getItem('booking_session_id');
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    sessionStorage.setItem('booking_session_id', sessionId);
+  }
+  return sessionId;
+};
+
 export default function BookingPage() {
   const [step, setStep] = useState(1);
   const [selectedFlight, setSelectedFlight] = useState<AvailableFlight | null>(null);
+  const [passengerCount, setPassengerCount] = useState(1);
   const [passengerData, setPassengerData] = useState<any>(null);
+  const [holdId, setHoldId] = useState<string | null>(null);
+
+  // Clean up hold when leaving the page
+  useEffect(() => {
+    return () => {
+      if (holdId) {
+        releaseHold();
+      }
+    };
+  }, [holdId]);
+
+  const createHold = async (flightId: string, count: number) => {
+    try {
+      const response = await fetch('/api/holds/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          flight_id: flightId,
+          passenger_count: count,
+          session_id: getSessionId(),
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success && result.hold) {
+        setHoldId(result.hold.id);
+      }
+    } catch (error) {
+      console.error('Failed to create hold:', error);
+    }
+  };
+
+  const releaseHold = async () => {
+    try {
+      await fetch('/api/holds/release', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: getSessionId(),
+        }),
+      });
+      setHoldId(null);
+    } catch (error) {
+      console.error('Failed to release hold:', error);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
@@ -79,8 +137,10 @@ export default function BookingPage() {
         <div className="max-w-4xl mx-auto">
           {step === 1 && (
             <FlightSelector
-              onSelect={(flight) => {
+              onSelect={async (flight, count) => {
                 setSelectedFlight(flight);
+                setPassengerCount(count);
+                await createHold(flight.id, count);
                 setStep(2);
               }}
             />
@@ -89,9 +149,14 @@ export default function BookingPage() {
           {step === 2 && selectedFlight && (
             <PassengerForm
               flight={selectedFlight}
-              onBack={() => setStep(1)}
-              onSubmit={(data) => {
+              initialPassengerCount={passengerCount}
+              onBack={async () => {
+                await releaseHold();
+                setStep(1);
+              }}
+              onSubmit={async (data) => {
                 setPassengerData(data);
+                await releaseHold();
                 setStep(3);
               }}
             />

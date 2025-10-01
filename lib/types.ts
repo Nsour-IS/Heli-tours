@@ -65,8 +65,19 @@ export interface AvailableFlight extends Flight {
   duration_minutes: number;
   base_price: number;
   remaining_seats: number;
+  held_seats: number;
+  actual_available_seats: number;
   remaining_weight_kg: number;
   availability_level: 'high' | 'low' | 'full' | 'none';
+}
+
+export interface FlightHold {
+  id: string;
+  flight_id: string;
+  session_id: string;
+  passenger_count: number;
+  expires_at: string;
+  created_at: string;
 }
 
 export interface BookingDetail extends Booking {
