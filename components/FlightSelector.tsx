@@ -164,7 +164,7 @@ export default function FlightSelector({ onSelect }: FlightSelectorProps) {
                     </p>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                       <span>⏱️ {flight.duration_minutes} minutes</span>
-                      <span>💰 ${flight.base_price} per person</span>
+                      <span>💰 {flight.base_price} JOD per person</span>
                     </div>
                   </div>
 

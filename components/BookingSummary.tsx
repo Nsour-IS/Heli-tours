@@ -125,7 +125,7 @@ export default function BookingSummary({
                   {passenger.weight_kg} kg
                 </p>
                 <p className="text-sm text-gray-600">
-                  ${flight.base_price}
+                  {flight.base_price} JOD
                 </p>
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function BookingSummary({
                 Base price × {passengerData.passengers.length} passenger(s)
               </span>
               <span className="font-semibold text-gray-800">
-                ${flight.base_price} × {passengerData.passengers.length}
+                {flight.base_price} JOD × {passengerData.passengers.length}
               </span>
             </div>
             <div className="flex justify-between">
@@ -187,7 +187,7 @@ export default function BookingSummary({
               <div className="flex justify-between items-center">
                 <span className="text-lg font-bold text-gray-800">Total</span>
                 <span className="text-2xl font-bold text-primary-600">
-                  ${totalPrice}
+                  {totalPrice} JOD
                 </span>
               </div>
             </div>
