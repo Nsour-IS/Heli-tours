@@ -455,4 +455,4 @@ When a booking cannot be accommodated:
 
 ---
 
-*This brief is a living document. Update as requirements evolve or new features are identified.*
+*This brief is a living document. Update as requirements evolve or new features are identified.
